@@ -45,16 +45,34 @@ const betaFeatures = [
 export function SablonaDpiaClient() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email || !email.includes("@")) {
       setError("Zadajte platnú e-mailovú adresu.");
       return;
     }
     setError("");
-    setSubmitted(true);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Registrácia zlyhala. Skúste znova.");
+      } else {
+        setSubmitted(true);
+      }
+    } catch {
+      setError("Registrácia zlyhala. Skúste znova.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -121,9 +139,10 @@ export function SablonaDpiaClient() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-blue-800 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+                  disabled={loading}
+                  className="w-full bg-blue-800 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Prihlásiť sa do beta zoznamu
+                  {loading ? "Registrujem..." : "Prihlásiť sa do beta zoznamu"}
                 </button>
                 <p className="text-xs text-gray-400 text-center">
                   Žiadny spam. Odhlásenie kedykoľvek. Vaše údaje spracúvame

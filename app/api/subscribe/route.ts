@@ -2,7 +2,7 @@ import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const audienceId = process.env.RESEND_AUDIENCE_ID!;
+const topicId = process.env.RESEND_AUDIENCE_ID!;
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
@@ -12,9 +12,9 @@ export async function POST(req: NextRequest) {
   }
 
   const { data, error } = await resend.contacts.create({
-    audienceId,
     email,
     unsubscribed: false,
+    topics: [{ id: topicId, subscription: "opt_in" }],
   });
 
   if (error) {

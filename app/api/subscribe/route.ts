@@ -11,15 +11,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Neplatná e-mailová adresa." }, { status: 400 });
   }
 
-  const { error } = await resend.contacts.create({
+  const { data, error } = await resend.contacts.create({
     audienceId,
     email,
     unsubscribed: false,
   });
 
   if (error) {
+    console.error("Resend error:", JSON.stringify(error));
     return NextResponse.json({ error: "Registrácia zlyhala. Skúste znova." }, { status: 500 });
   }
 
+  console.log("Contact created:", JSON.stringify(data));
   return NextResponse.json({ success: true });
 }

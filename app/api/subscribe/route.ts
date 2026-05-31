@@ -18,10 +18,8 @@ export async function POST(req: NextRequest) {
   });
 
   if (error) {
-    console.error("Resend error:", JSON.stringify(error));
     return NextResponse.json({ error: "Registrácia zlyhala. Skúste znova." }, { status: 500 });
   }
 
-  console.log("Contact created:", JSON.stringify(data));
   return NextResponse.json({ success: true });
 }
